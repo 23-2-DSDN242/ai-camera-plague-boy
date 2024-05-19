@@ -18,29 +18,50 @@ function setup () {
 
   imageMode(CENTER);
   noStroke();
-  background(255, 0, 0);
+  background(0, 0, 128);
   sourceImg.loadPixels();
   maskImg.loadPixels();
+  colorMode(HSB);
 }
 
 function draw () {
-  for(let i=0;i<4000;i++) {
-    let x = floor(random(sourceImg.width));
-    let y = floor(random(sourceImg.height));
-    let pix = sourceImg.get(x, y);
-    let mask = maskImg.get(x, y);
-    fill(pix);
-    if(mask[0] > 128) {
-      let pointSize = 10;
-      ellipse(x, y, pointSize, pointSize);
-    }
-    else {
-      let pointSize = 20;
-      rect(x, y, pointSize, pointSize);    
+  let num_lines_to_draw = 40;
+  // get one scanline
+  for(let j=renderCounter; j<renderCounter+num_lines_to_draw && j<1080; j++) {
+    for(let i=0; i<1920; i++) {
+      colorMode(RGB);
+      let pix = sourceImg.get(i, j);
+      // create a color from the values (always RGB)
+      let col = color(pix);
+      let mask = maskImg.get(i, j);
+
+       colorMode(HSB, 360, 100, 100);
+      // draw a "dimmed" version in gray
+      let h = hue(col);
+      let s = saturation(col);
+      let b = brightness(col);
+
+      if(mask[0] > 128) { /// when mask is white
+        // draw the full pixels
+        // let new_sat = map(s, 0, 100, 50, 100);
+        let new_brt = map(b, 0, 100, 50, 100);
+       let new_hue = map(h, 0, 360, 180, 540);
+        let new_col = color(new_hue, s, new_brt);
+        set(i, j, new_col);
+      }
+      else { // when mask is black
+        // let new_brt = map(b, 0, 100, 20, 40);
+        let new_brt = map(b, 0, 100, 100, 0);
+        let new_col = color(h, 0, new_brt);
+        // let new_col = color(h, s, b);
+        set(i, j, col);
+      }
     }
   }
-  renderCounter = renderCounter + 1;
-  if(renderCounter > 10) {
+  renderCounter = renderCounter + num_lines_to_draw;
+  updatePixels();
+  // print(renderCounter);
+  if(renderCounter > 1080) {
     console.log("Done!")
     noLoop();
     // uncomment this to save the result
