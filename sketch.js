@@ -3,9 +3,9 @@ let maskImg=null;
 let renderCounter=0;
 
 // change these three lines as appropiate
-let sourceFile = "input_1.jpg";
-let maskFile   = "mask_1.png";
-let outputFile = "output_1.png";
+let sourceFile = "input_new4.jpg";
+let maskFile   = "mask_new4.png";
+let outputFile = "output_2.png";
 
 function preload() {
   sourceImg = loadImage(sourceFile);
@@ -23,41 +23,59 @@ function setup () {
   maskImg.loadPixels();
   colorMode(HSB);
 }
+// let X_STOP = 640;
+// let Y_STOP = 480;
+let X_STOP = 1920;
+let Y_STOP = 1080;
+let OFFSET = 30;
 
 function draw () {
   let num_lines_to_draw = 40;
-  // get one scanline
-  for(let j=renderCounter; j<renderCounter+num_lines_to_draw && j<1080; j++) {
+  angleMode(DEGREES);
+  for(let j=renderCounter; j<renderCounter+num_lines_to_draw && j<Y_STOP; j++) {
     for(let i=0; i<1920; i++) {
       colorMode(RGB);
+      let x = floor(random(sourceImg.width));
+      let y = floor(random(sourceImg.height));
+      let pixco = sourceImg.get(x, y);
       let pix = sourceImg.get(i, j);
-      // create a color from the values (always RGB)
+        // create a color from the values (always RGB)
       let col = color(pix);
-      let mask = maskImg.get(i, j);
-
-       colorMode(HSB, 360, 100, 100);
-      // draw a "dimmed" version in gray
+      colorMode(HSB, 360, 100, 100);
+        // draw a "dimmed" version in gray
       let h = hue(col);
       let s = saturation(col);
       let b = brightness(col);
-
+      let mask = maskImg.get(i, j);
+      
       if(mask[0] > 128) { /// when mask is white
         // draw the full pixels
         // let new_sat = map(s, 0, 100, 50, 100);
-        let new_brt = map(b, 0, 100, 50, 100);
-       let new_hue = map(h, 0, 360, 180, 540);
-        let new_col = color(new_hue, s, new_brt);
+        pix = sourceImg.get(i, j);
+        let new_brt = map(b, 0, 100, 100, 50);
+        let new_hue = map(h, 0, 360, 180, 540);
+        let new_col = color(new_hue, 0, new_brt);
         set(i, j, new_col);
       }
       else { // when mask is black
-        // let new_brt = map(b, 0, 100, 20, 40);
-        let new_brt = map(b, 0, 100, 100, 0);
-        let new_col = color(h, 0, new_brt);
-        // let new_col = color(h, s, b);
-        set(i, j, col);
+        // fill(pix);
+        // let pointSize = 50;
+        // rect(i, j, pointSize, pointSize);
+        let wave = sin(j*3);
+        let slip = map(wave, -1, 1, -OFFSET, OFFSET);
+        pix = sourceImg.get(i+slip, j);
+        set(i, j, pix);
       }
+      if(mask[0]<128){
+        fill(pixco);
+        let pointSize = 50;
+        rect(i, j, pointSize, pointSize);
+      }
+      
+
+      
+        
     }
-  }
   renderCounter = renderCounter + num_lines_to_draw;
   updatePixels();
   // print(renderCounter);
@@ -67,10 +85,12 @@ function draw () {
     // uncomment this to save the result
     // saveArtworkImage(outputFile);
   }
-}
+
 
 function keyTyped() {
   if (key == '!') {
     saveBlocksImages();
   }
+}
+}
 }
