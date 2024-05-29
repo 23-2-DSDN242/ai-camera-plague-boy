@@ -3,9 +3,9 @@ let maskImg=null;
 let renderCounter=0;
 
 // change these three lines as appropiate
-let sourceFile = "input_new4.jpg";
-let maskFile   = "mask_new4.png";
-let outputFile = "output_2.png";
+let sourceFile = "input_4.jpg";
+let maskFile   = "mask_4.png";
+let outputFile = "output_4.png";
 
 function preload() {
   sourceImg = loadImage(sourceFile);
@@ -66,11 +66,12 @@ function draw () {
         pix = sourceImg.get(i+slip, j);
         set(i, j, pix);
       }
-      if(mask[0]<128){
-        fill(pixco);
-        let pointSize = 50;
-        rect(i, j, pointSize, pointSize);
-      }
+      // if(mask[0]<128){
+      //   get(i, j, pix);
+      //   fill(pixco);
+      //   let pointSize = 50;
+      //   rect(i, j, pointSize, pointSize);
+      // }
       
 
       
@@ -79,11 +80,13 @@ function draw () {
   renderCounter = renderCounter + num_lines_to_draw;
   updatePixels();
   // print(renderCounter);
-  if(renderCounter > 1080) {
+
+  if(renderCounter >= 1080) {
     console.log("Done!")
     noLoop();
     // uncomment this to save the result
-    // saveArtworkImage(outputFile);
+   // saveArtworkImage(outputFile);
+    
   }
 
 
